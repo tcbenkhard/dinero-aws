@@ -22,9 +22,15 @@ jobs:
     executor: aws-cli/default
     steps: 
       - build
+      - persist_to_workspace:
+          root: .
+          paths:
+            - .
   deploy-test:
     executor: aws-cli/default
     steps:
+      - attach_workspace:
+          at: .
       - deploy-test
   # deploy-prod:
   #   executor: agent
