@@ -123,7 +123,7 @@ export class DineroStack extends cdk.Stack {
             return [];
           },
           beforeBundling(inputDir: string, outputDir: string): string[] {
-            return ['npm rebuild --arch=x64 --platform=linux sharp', 'pwd', 'ls -lha']
+            return ['npm rebuild --arch=x64 --platform=linux sharp', 'echo "pwd"', 'pwd', 'echo "root ls"', 'ls -lha', 'echo "input ls"', 'ls -lha asset-input']
           }
         }
       },
