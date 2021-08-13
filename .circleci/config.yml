@@ -1,0 +1,44 @@
+# This config is equivalent to both the '.circleci/extended/orb-free.yml' and the base '.circleci/config.yml'
+version: 2.1
+
+orbs:
+  aws-cli: circleci/aws-cli@2.0.3
+  
+commands:
+  build:
+    steps:
+      - checkout
+      - run: npm install
+      - run: npm test
+  deploy-test:
+    steps:
+      - run: cdk deploy dinero-tst
+  # deploy-prod:
+  #   steps:
+  #     - run: cdk deploy dinero
+  
+
+executors:
+  agent:
+    docker:
+      - image: cimg/node:14.17.5
+
+jobs:
+  build-with-docker:
+    executor: agent
+    steps: 
+      - build
+  deploy-test:
+    executor: agent
+    steps:
+      - deploy-test
+  # deploy-prod:
+  #   executor: agent
+  #   steps:
+  #     - deploy-prod
+
+workflows:
+  branch-flow:
+    jobs:
+      - build-with-docker
+      - deploy-test
