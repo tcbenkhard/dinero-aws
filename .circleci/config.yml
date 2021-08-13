@@ -16,16 +16,10 @@ commands:
   # deploy-prod:
   #   steps:
   #     - run: cdk deploy dinero
-  
-
-executors:
-  agent:
-    docker:
-      - image: cimg/node:14.17.5
 
 jobs:
   build-with-docker:
-    executor: agent
+    executor: aws-cli/default
     steps: 
       - build
   deploy-test:
