@@ -13,9 +13,9 @@ commands:
   deploy-test:
     steps:
       - run: npm run cdk deploy --require-approval never dinero-tst
-   deploy-prod:
-     steps:
-       - run: npm run cdk deploy --require-approval never dinero
+  deploy-prod:
+    steps:
+      - run: npm run cdk deploy --require-approval never dinero
 
 jobs:
   build:
@@ -36,6 +36,7 @@ jobs:
       - attach_workspace:
         at: .
       - deploy-test
+
   deploy-prod:
     branches:
       only:
