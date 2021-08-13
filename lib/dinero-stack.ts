@@ -169,10 +169,11 @@ export class DineroStack extends cdk.Stack {
       zoneName: 'benkhard.com' // your zone name here
     });
 
+    let hostname = props?.stage == 'prd' ? 'dinero.benkhard.com' : `${serviceName}.benkhard.com`;
     new route53.ARecord(this, '`${serviceName}-dnsRecord`', {
       zone,
       target: route53.RecordTarget.fromAlias(new alias.ApiGateway(gateway)),
-      recordName: `${serviceName}.benkhard.com`
+      recordName: hostname
     });
   }
 }
