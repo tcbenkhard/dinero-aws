@@ -8,6 +8,8 @@
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
+    "deploy-test": "cdk deploy dinero-tst --require-approval never",
+    "deploy-prod": "cdk deploy dinero --require-approval never",
     "cdk": "cdk"
   },
   "devDependencies": {

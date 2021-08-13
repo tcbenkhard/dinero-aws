@@ -12,10 +12,10 @@ commands:
       - run: npm test
   deploy-test:
     steps:
-      - run: npm run cdk deploy --require-approval never dinero-tst
+      - run: npm run deploy-test
   deploy-prod:
     steps:
-      - run: npm run cdk deploy --require-approval never dinero
+      - run: npm run deploy-prod
 
 jobs:
   build:
