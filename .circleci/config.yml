@@ -12,13 +12,15 @@ commands:
       - run: npm test
   deploy-test:
     steps:
-      - run: npm run cdk deploy dinero-tst
+      - setup_remote_docker:
+        version: 19.03.13
+      - run: npm run cdk deploy --require-approval never dinero-tst
   # deploy-prod:
   #   steps:
   #     - run: cdk deploy dinero
 
 jobs:
-  build-with-docker:
+  build:
     executor: aws-cli/default
     steps: 
       - build
@@ -40,7 +42,7 @@ jobs:
 workflows:
   build:
     jobs:
-      - build-with-docker
+      - build
       - deploy-test:
           requires:
             - build-with-docker
