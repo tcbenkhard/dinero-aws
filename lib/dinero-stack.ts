@@ -91,6 +91,7 @@ export class DineroStack extends cdk.Stack {
       entry: 'src/get-meals-handler.ts',
       environment,
     });
+    mealsTable.grantReadData(getMealsLambda);
 
     const getSignedUrlLambda = new NodejsFunction(this, `${serviceName}-get-signed-url-lambda`, {
       functionName: `${serviceName}-get-signed-url-lambda`,
