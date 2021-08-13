@@ -3,7 +3,7 @@ import {ApiError, InternalServerError} from "./error";
 
 export abstract class BaseHandler<T> {
     abstract validate(event: APIGatewayProxyEvent): T;
-    abstract async handle(request: T, context: Context): Promise<Response>;
+    abstract handle(request: T, context: Context): Promise<Response>;
 
     public lambda = async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
         try {

@@ -75,31 +75,6 @@ export class DineroStack extends cdk.Stack {
     const certificate = cm.Certificate.fromCertificateArn(this, `${serviceName}-certificate`, certificateArn);
 
     //
-    // API Gateway
-    //
-    const gateway = new apigw.RestApi(this, `${serviceName}`, {
-      domainName: {
-        certificate,
-        domainName: `${serviceName}.benkhard.com`
-      }
-    });
-
-    //
-    // Route53
-    //
-    const zoneId = ssm.StringParameter.valueFromLookup(this,'/com/benkhard/public-hosted-zone-id');
-    const zone = route53.HostedZone.fromHostedZoneAttributes(this, `${serviceName}-hostedZone`, {
-      hostedZoneId: zoneId,
-      zoneName: 'benkhard.com' // your zone name here
-    });
-
-    new route53.ARecord(this, '`${serviceName}-dnsRecord`', {
-      zone,
-      target: route53.RecordTarget.fromAlias(new alias.ApiGateway(gateway)),
-      recordName: `${serviceName}.benkhard.com`
-    });
-
-    //
     // Lambda
     //
     const environment = {
@@ -148,7 +123,7 @@ export class DineroStack extends cdk.Stack {
             return [];
           },
           beforeBundling(inputDir: string, outputDir: string): string[] {
-            return ['npm rebuild --arch=x64 --platform=linux sharp']
+            return ['npm rebuild --arch=x64 --platform=linux sharp', 'echo "pwd"', 'pwd', 'echo "root ls"', 'ls -lha', 'echo "input ls"', 'ls -lha asset-input']
           }
         }
       },
@@ -168,11 +143,36 @@ export class DineroStack extends cdk.Stack {
     mealsTable.grantReadWriteData(imageProcessedListener);
     imageProcessedListener.addEventSource(new SqsEventSource(imageProcessedQueue));
 
+    //
+    // API Gateway
+    //
+    const gateway = new apigw.RestApi(this, `${serviceName}`, {
+      domainName: {
+        certificate,
+        domainName: `${serviceName}.benkhard.com`
+      }
+    });
+
     const meals = gateway.root.addResource('meals');
     meals.addMethod('GET', new LambdaIntegration(getMealsLambda))
     meals.addMethod('POST', new LambdaIntegration(postMealLambda))
 
     const upload = gateway.root.addResource('upload');
     upload.addMethod('GET', new LambdaIntegration(getSignedUrlLambda));
+
+    //
+    // Route53
+    //
+    const zoneId = ssm.StringParameter.valueFromLookup(this,'/com/benkhard/public-hosted-zone-id');
+    const zone = route53.HostedZone.fromHostedZoneAttributes(this, `${serviceName}-hostedZone`, {
+      hostedZoneId: zoneId,
+      zoneName: 'benkhard.com' // your zone name here
+    });
+
+    new route53.ARecord(this, '`${serviceName}-dnsRecord`', {
+      zone,
+      target: route53.RecordTarget.fromAlias(new alias.ApiGateway(gateway)),
+      recordName: `${serviceName}.benkhard.com`
+    });
   }
 }
