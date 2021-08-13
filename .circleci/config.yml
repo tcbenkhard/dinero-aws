@@ -38,7 +38,9 @@ jobs:
   #     - deploy-prod
 
 workflows:
-  branch-flow:
+  build:
     jobs:
       - build-with-docker
-      # - deploy-test
+  deploy-test:
+    jobs:
+      - deploy-test
