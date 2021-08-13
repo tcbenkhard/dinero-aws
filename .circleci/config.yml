@@ -14,6 +14,7 @@ commands:
     steps:
       - setup_remote_docker:
           version: 20.10.6
+          docker_layer_caching: true
       - run: npm run cdk deploy --require-approval never dinero-tst
   # deploy-prod:
   #   steps:
