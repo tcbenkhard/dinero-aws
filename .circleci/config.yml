@@ -45,4 +45,4 @@ workflows:
       - build
       - deploy-test:
           requires:
-            - build-with-docker
+            - build
