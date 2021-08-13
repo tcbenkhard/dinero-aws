@@ -23,6 +23,7 @@ export class DineroStack extends cdk.Stack {
   constructor(scope: cdk.Construct, id: string, props?: DineroStackProps) {
     super(scope, id, props);
     const serviceName = `dinero-${props?.stage}`
+    const domainName = props?.stage == 'prd' ? 'dinero.benkhard.com' : `${serviceName}.benkhard.com`;
 
     /**
     // SNS
@@ -149,7 +150,7 @@ export class DineroStack extends cdk.Stack {
     const gateway = new apigw.RestApi(this, `${serviceName}`, {
       domainName: {
         certificate,
-        domainName: `${serviceName}.benkhard.com`
+        domainName
       }
     });
 
@@ -169,11 +170,11 @@ export class DineroStack extends cdk.Stack {
       zoneName: 'benkhard.com' // your zone name here
     });
 
-    let hostname = props?.stage == 'prd' ? 'dinero.benkhard.com' : `${serviceName}.benkhard.com`;
+
     new route53.ARecord(this, '`${serviceName}-dnsRecord`', {
       zone,
       target: route53.RecordTarget.fromAlias(new alias.ApiGateway(gateway)),
-      recordName: hostname
+      recordName: domainName
     });
   }
 }
