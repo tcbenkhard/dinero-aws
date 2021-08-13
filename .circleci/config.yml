@@ -12,8 +12,6 @@ commands:
       - run: npm test
   deploy-test:
     steps:
-      - setup_remote_docker:
-          version: 20.10.6
       - run: npm run cdk deploy --require-approval never dinero-tst
   # deploy-prod:
   #   steps:
@@ -31,6 +29,8 @@ jobs:
   deploy-test:
     executor: aws-cli/default
     steps:
+      - setup_remote_docker:
+          version: 20.10.6
       - attach_workspace:
           at: .
       - deploy-test
