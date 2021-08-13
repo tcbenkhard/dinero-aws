@@ -32,4 +32,8 @@ export class Response implements APIGatewayProxyResult {
     static ok = (object: any) => {
         return new Response(object, 200);
     }
+
+    static created(object: any) {
+        return new Response(object, 201);
+    }
 }

@@ -1,9 +1,11 @@
-import {Ingredient} from "./ingredient";
+import {z} from "zod";
 
-export class Meal {
-    shortName: string;
-    name: string;
-    imageKey?: string;
-    description?: string;
-    ingredients?: Ingredient[];
-}
+export const MealSchema = z.object({
+    shortName: z.string(),
+    name: z.string(),
+    imageUrl: z.string().optional(),
+    ingredients: z.string().optional(),
+    description: z.string().optional(),
+});
+
+export type Meal = z.infer<typeof MealSchema>
