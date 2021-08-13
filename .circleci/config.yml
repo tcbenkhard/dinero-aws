@@ -27,25 +27,19 @@ jobs:
           paths:
             - .
   deploy-test:
-    branches:
-      ignore:
-        - master
     machine:
       image: ubuntu-1604:202007-01
     steps:
       - attach_workspace:
-        at: .
+          at: .
       - deploy-test
 
   deploy-prod:
-    branches:
-      only:
-        - master
     machine:
       image: ubuntu-1604:202007-01
     steps:
       - attach_workspace:
-        at: .
+          at: .
       - deploy-prod
 
 workflows:
@@ -53,8 +47,14 @@ workflows:
     jobs:
       - build
       - deploy-test:
+          filters:
+            branches:
+              ignore: master
           requires:
             - build
       - deploy-prod:
+          filters:
+            branches:
+              only: master
           requires:
             - build
