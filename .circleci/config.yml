@@ -13,7 +13,7 @@ commands:
   deploy-test:
     steps:
       - setup_remote_docker:
-        version: 19.03.13
+          version: 19.03.13
       - run: npm run cdk deploy --require-approval never dinero-tst
   # deploy-prod:
   #   steps:
