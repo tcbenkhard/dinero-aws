@@ -12,7 +12,7 @@ commands:
       - run: npm test
   deploy-test:
     steps:
-      - run: cdk deploy dinero-tst
+      - run: npm run cdk deploy dinero-tst
   # deploy-prod:
   #   steps:
   #     - run: cdk deploy dinero
@@ -29,7 +29,7 @@ jobs:
     steps: 
       - build
   deploy-test:
-    executor: agent
+    executor: aws-cli/default
     steps:
       - deploy-test
   # deploy-prod:
