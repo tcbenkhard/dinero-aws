@@ -8,7 +8,9 @@ class GetMealsHandler extends BaseHandler<GetMealsRequest> {
 
     async handle(request: GetMealsRequest, context: Context): Promise<Response> {
         const result = await this.mealService.findAll();
-        return Response.ok(result);
+        return Response.ok(result, {
+            "Access-Control-Allow-Origin": "*"
+        });
     }
 
     validate(event: APIGatewayProxyEvent): GetMealsRequest {

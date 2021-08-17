@@ -8,9 +8,7 @@ export abstract class BaseHandler<T> {
     public lambda = async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
         try {
             const parsedObject = this.validate(event);
-            let result: Response = await this.handle(parsedObject, context);
-            result.headers["Access-Control-Allow-Origin"] = "*";
-            return result;
+            return await this.handle(parsedObject, context);
         } catch (e) {
             if(e instanceof ApiError) {
                 return e;

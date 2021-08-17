@@ -19,7 +19,9 @@ describe('Get meals handler', () => {
         const event: APIGatewayProxyEvent = {};
         // @ts-ignore
         const context: Context = {}
-        const expectedResult = Response.ok([]);
+        const expectedResult = Response.ok([], {
+            "Access-Control-Allow-Origin": "*"
+        });
         const result = handler(event, context);
 
         await expect(result).resolves.toStrictEqual(expectedResult);
@@ -33,7 +35,9 @@ describe('Get meals handler', () => {
         const event: APIGatewayProxyEvent = {};
         // @ts-ignore
         const context: Context = {}
-        const expectedResult = Response.ok([{name: 'meal 1'}, {name: 'meal 2'}]);
+        const expectedResult = Response.ok([{name: 'meal 1'}, {name: 'meal 2'}], {
+            "Access-Control-Allow-Origin": "*"
+        });
         const result = handler(event, context);
 
         await expect(result).resolves.toStrictEqual(expectedResult);
