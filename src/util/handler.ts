@@ -8,7 +8,9 @@ export abstract class BaseHandler<T> {
     public lambda = async (event: APIGatewayProxyEvent, context: Context): Promise<APIGatewayProxyResult> => {
         try {
             const parsedObject = this.validate(event);
-            return await this.handle(parsedObject, context);
+            let result: Response = await this.handle(parsedObject, context);
+            result.headers["Access-Control-Allow-Origin"] = "*";
+            return result;
         } catch (e) {
             if(e instanceof ApiError) {
                 return e;
@@ -23,17 +25,19 @@ export abstract class BaseHandler<T> {
 export class Response implements APIGatewayProxyResult {
     body: string;
     statusCode: number;
+    headers: {[header: string]: boolean | number | string};
 
-    private constructor(body: string, statusCode: number) {
+    private constructor(body: string, statusCode: number, headers?: {[header: string]: boolean | number | string} | undefined ) {
         this.body = JSON.stringify(body);
         this.statusCode = statusCode;
+        this.headers = headers || {};
     }
 
-    static ok = (object: any) => {
+    static ok = (object: any, headers?: {[header: string]: boolean | number | string} | undefined) => {
         return new Response(object, 200);
     }
 
-    static created(object: any) {
+    static created(object: any, headers?: {[header: string]: boolean | number | string} | undefined) {
         return new Response(object, 201);
     }
 }
