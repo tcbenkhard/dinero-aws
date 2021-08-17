@@ -152,6 +152,14 @@ export class DineroStack extends cdk.Stack {
       domainName: {
         certificate,
         domainName
+      },
+      defaultCorsPreflightOptions: {
+        allowOrigins: apigw.Cors.ALL_ORIGINS,
+        allowMethods: apigw.Cors.ALL_METHODS,
+        allowCredentials: true,
+        allowHeaders: apigw.Cors.DEFAULT_HEADERS,
+        maxAge: Duration.seconds(60000),
+        exposeHeaders: ['*']
       }
     });
 
