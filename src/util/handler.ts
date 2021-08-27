@@ -32,10 +32,10 @@ export class Response implements APIGatewayProxyResult {
     }
 
     static ok = (object: any, headers?: {[header: string]: boolean | number | string} | undefined) => {
-        return new Response(object, 200);
+        return new Response(object, 200, headers);
     }
 
     static created(object: any, headers?: {[header: string]: boolean | number | string} | undefined) {
-        return new Response(object, 201);
+        return new Response(object, 201, headers);
     }
 }

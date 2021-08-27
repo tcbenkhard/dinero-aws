@@ -14,16 +14,19 @@ import {S3EventSource, SqsEventSource} from "@aws-cdk/aws-lambda-event-sources";
 import * as sqs from '@aws-cdk/aws-sqs';
 import * as sns from '@aws-cdk/aws-sns';
 import * as sub from '@aws-cdk/aws-sns-subscriptions';
+import * as cf from '@aws-cdk/aws-cloudfront';
+import * as origins from '@aws-cdk/aws-cloudfront-origins';
 
 interface DineroStackProps extends cdk.StackProps {
   stage: 'dev'|'tst'|'prd'
 }
 
 export class DineroStack extends cdk.Stack {
-  constructor(scope: cdk.Construct, id: string, props?: DineroStackProps) {
+  constructor(scope: cdk.Construct, id: string, props: DineroStackProps) {
     super(scope, id, props);
     const serviceName = `dinero-${props?.stage}`
     const domainName = props?.stage == 'prd' ? 'dinero.benkhard.com' : `${serviceName}.benkhard.com`;
+    const imageDomainName = props?.stage == 'prd' ? 'images.benkhard.com' : `images-${props.stage}.benkhard.com`;
 
     /**
     // SNS
@@ -58,7 +61,16 @@ export class DineroStack extends cdk.Stack {
       ]
     });
 
-    //
+    /**
+     * Cloudfront
+     */
+    const imageCloudfront = new cf.Distribution(this, `${serviceName}-image-cloudfront`, {
+      defaultBehavior: {
+        origin: new origins.S3Origin(imageBucket),
+      },
+    });
+
+        //
     // DynamoDB
     //
     const mealsTable = new dynamo.Table(this, `${serviceName}-meals`, {
@@ -155,63 +167,7 @@ export class DineroStack extends cdk.Stack {
       },
       defaultCorsPreflightOptions: {
         allowOrigins: apigw.Cors.ALL_ORIGINS,
-        allowMethods: apigw.Cors.ALL_METHODS,
-        allowCredentials: true,
-        allowHeaders: apigw.Cors.DEFAULT_HEADERS,
-        maxAge: Duration.seconds(60000),
-        exposeHeaders: ['*'],
       },
-      defaultMethodOptions: {
-        methodResponses: [
-          {
-            statusCode: '200',
-            responseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': true,
-              'method.response.header.Access-Control-Allow-Methods': true,
-              'method.response.header.Access-Control-Allow-Origin': true
-            }
-          },
-          {
-            statusCode: '201',
-            responseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': true,
-              'method.response.header.Access-Control-Allow-Methods': true,
-              'method.response.header.Access-Control-Allow-Origin': true
-            }
-          },
-          {
-            statusCode: '204',
-            responseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': true,
-              'method.response.header.Access-Control-Allow-Methods': true,
-              'method.response.header.Access-Control-Allow-Origin': true
-            }
-          },
-          {
-            statusCode: '400',
-            responseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': true,
-              'method.response.header.Access-Control-Allow-Methods': true,
-              'method.response.header.Access-Control-Allow-Origin': true
-            }
-          },
-          {
-            statusCode: '404',
-            responseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': true,
-              'method.response.header.Access-Control-Allow-Methods': true,
-              'method.response.header.Access-Control-Allow-Origin': true
-            }
-          },
-          {
-            statusCode: '500',
-            responseParameters: {
-              'method.response.header.Access-Control-Allow-Headers': true,
-              'method.response.header.Access-Control-Allow-Methods': true,
-              'method.response.header.Access-Control-Allow-Origin': true
-            }
-          }]
-      }
     });
 
     const meals = gateway.root.addResource('meals');
@@ -230,11 +186,16 @@ export class DineroStack extends cdk.Stack {
       zoneName: 'benkhard.com' // your zone name here
     });
 
-
-    new route53.ARecord(this, '`${serviceName}-dnsRecord`', {
+    new route53.ARecord(this, `${serviceName}-api-dns`, {
       zone,
       target: route53.RecordTarget.fromAlias(new alias.ApiGateway(gateway)),
       recordName: domainName
+    });
+
+    new route53.ARecord(this, `${serviceName}-image-dns`, {
+      zone,
+      target: route53.RecordTarget.fromAlias(new alias.CloudFrontTarget(imageCloudfront)),
+      recordName: imageDomainName
     });
   }
 }
